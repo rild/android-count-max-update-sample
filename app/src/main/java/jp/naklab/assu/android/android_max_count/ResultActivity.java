@@ -10,25 +10,23 @@ import android.widget.TextView;
 public class ResultActivity extends AppCompatActivity {
 
     private final String PREF_KEY = "pref_key";
-    private final String PREF_SCORE_KEY ="highscore_key";
+    private final String PREF_SCORE_KEY = "highscore_key";
     SharedPreferences pref;
     int highScore;
 
     TextView textViewResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
 
-        pref = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
-        SharedPreferences.Editor e = pref.edit();
-        highScore = pref.getInt(PREF_SCORE_KEY, 15);
+        highScore = loadHightScore();
 
 
+        int currentScore = loadCurrentScore();
 
-        Intent intent = getIntent();
-        int currentScore = intent.getIntExtra(MainActivity.INTENT_KEY, 0);
 
         if (currentScore > highScore) {
             highScore = currentScore;
@@ -36,8 +34,27 @@ public class ResultActivity extends AppCompatActivity {
 
         textViewResult = findViewById(R.id.textview_result);
         textViewResult.setText("" + highScore);
+
+        saveHighScore();
+    }
+
+    private int loadCurrentScore() {
+        Intent intent = getIntent();
+        return intent.getIntExtra(MainActivity.INTENT_KEY, 0);
+    }
+
+    private int loadHightScore() {
+        pref = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
+        SharedPreferences.Editor e = pref.edit();
+        return pref.getInt(PREF_SCORE_KEY, 15);
+    }
+
+    private void saveHighScore() {
+        pref = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
+        SharedPreferences.Editor e = pref.edit();
         e.putInt(PREF_SCORE_KEY, highScore).commit();
     }
+
 
     public void back(View v) {
         finish();
